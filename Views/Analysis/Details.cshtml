@@ -1,0 +1,107 @@
+@using IntelligentNewsAnalyzer.Services
+@model IntelligentNewsAnalyzer.Models.ArticleAnalysis
+@{
+    ViewData["Title"] = "Резултат от анализ";
+    var keyPoints = string.IsNullOrWhiteSpace(Model.KeyPoints)
+        ? Array.Empty<string>()
+        : Model.KeyPoints.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+}
+
+<div class="detail-top">
+    <div>
+        <p class="eyebrow">SMARTNEWS AI АНАЛИТИЧЕН ОТЧЕТ</p>
+        <h1 class="detail-page-title">Пълен отчет от интелигентния анализ</h1>
+        <p class="lead">
+            Детайлна разбивка на новинарската статия, включваща оригиналното
+            съдържание, структурираното ИИ резюме, тематичната класификация,
+            емоционалната тоналност и извлечените ключови акценти.
+        </p>
+    </div>
+    <div class="detail-actions">
+        @if (Model.ArticleId is int articleId)
+        {
+            <a class="btn btn-outline-soft" asp-controller="News" asp-action="Details" asp-route-id="@articleId">← Към новината</a>
+        }
+        <a class="btn btn-outline-soft" asp-controller="Analysis" asp-action="Index">← Към историята на анализите</a>
+    </div>
+</div>
+
+<article class="panel result-panel analysis-detail">
+    <p class="eyebrow">Пълен анализ</p>
+    <h1>@Model.Title</h1>
+    <div class="meta-row mb-3 flex-wrap">
+        <span class="pill">@NewsCategories.Label(Model.Category)</span>
+        <span class="pill">@DisplayText.Sentiment(Model.Sentiment)</span>
+        <span class="pill">@NewsCategories.LanguageLabel(Model.Language)</span>
+        <span>@Model.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</span>
+    </div>
+
+    <section class="detail-block">
+        <h2>1. Оригинално заглавие</h2>
+        <p>@Model.Title</p>
+    </section>
+
+    <section class="detail-block">
+        <h2>2. Оригинален текст на новината</h2>
+        <p class="original-text">@Model.OriginalText</p>
+    </section>
+
+    <section class="detail-block">
+        <h2>3. AI генерирано резюме</h2>
+        <p class="lead">@Model.Summary</p>
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(Model.MainIdea))
+    {
+        <section class="detail-block">
+            <h2>Основна идея</h2>
+            <p>@Model.MainIdea</p>
+        </section>
+    }
+
+    @if (keyPoints.Length > 0)
+    {
+        <section class="detail-block">
+            <h2>Основни акценти</h2>
+            <ul class="about-list">
+                @foreach (var point in keyPoints)
+                {
+                    <li>@point</li>
+                }
+            </ul>
+        </section>
+    }
+
+    <section class="detail-block">
+        <h2>4. Категория</h2>
+        <p>@NewsCategories.Label(Model.Category) <span class="hint">(@Model.Category)</span></p>
+    </section>
+
+    <section class="detail-block">
+        <h2>5. Теми</h2>
+        <p>@(string.IsNullOrWhiteSpace(Model.Topics) ? "Няма извлечени теми." : Model.Topics)</p>
+    </section>
+
+    <section class="detail-block">
+        <h2>6. Тоналност</h2>
+        <p>@DisplayText.Sentiment(Model.Sentiment)</p>
+    </section>
+
+    <section class="detail-block">
+        <h2>7. Използван модел</h2>
+        <p>@DisplayText.Engine(Model.Engine)</p>
+    </section>
+
+    <section class="detail-block">
+        <h2>8. Дата и час на анализа</h2>
+        <p>📅@Model.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss")</p>
+    </section>
+    <div class="card-actions mt-3">
+        @if (Model.ArticleId is int articleId2)
+        {
+            <a class="btn btn-ghost" asp-controller="News" asp-action="Details" asp-route-id="@articleId2">Към новината</a>
+        }
+        <a class="btn btn-copper" asp-controller="Analysis" asp-action="Index">Нов анализ</a>
+    </div>
+    
+</article>

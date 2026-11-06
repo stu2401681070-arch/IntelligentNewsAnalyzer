@@ -1,0 +1,67 @@
+@using IntelligentNewsAnalyzer.Services
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] · NewsAnalizerApi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,600;7..72,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="page-shell">
+        <header class="site-header">
+            <div class="container header-inner">
+                <a class="brand" asp-controller="Home" asp-action="Index">
+                    <span class="brand-logo" aria-hidden="true">
+                        <svg viewBox="0 0 48 48" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0%" stop-color="#2a221c" />
+                                    <stop offset="100%" stop-color="#1a1512" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="48" height="48" rx="12" fill="url(#lg)" />
+                            <rect x="12" y="12" width="24" height="28" rx="3" fill="none" stroke="#e8d5c4" stroke-width="2" />
+                            <path d="M16 18h16M16 23h12M16 28h14M16 33h9" stroke="#c45c26" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                    </span>
+                    <span class="brand-text">
+                        <strong>NewsAnalyzerApi</strong>
+                        <small>Интелигентен новинарски анализ</small>
+                    </span>
+                </a>
+                <button class="nav-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Меню" aria-expanded="false" aria-controls="mainNav">
+                    ☰
+                </button>
+                <nav id="mainNav" class="collapse site-nav">
+                    <a asp-controller="Home" asp-action="Index">Начало</a>
+                    <a asp-controller="News" asp-action="Index">Новини</a>
+                    <a asp-controller="Analysis" asp-action="Index">Анализ</a>
+                    <a asp-controller="Statistics" asp-action="Index">Статистика</a>
+                    <a asp-controller="Home" asp-action="About">За приложението</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="site-main">
+            <div class="container py-4 py-lg-5">
+                @RenderBody()
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <div class="container footer-inner">
+                <span>© 2026 News Analyzer Api | Разработено с NewsAPI</span>
+            </div>
+        </footer>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

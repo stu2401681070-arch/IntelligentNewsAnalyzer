@@ -1,0 +1,13 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Грешка";
+}
+
+<section class="panel">
+    <p class="eyebrow">Система</p>
+    <h1>Възникна грешка при обработката.</h1>
+    @if (Model.ShowRequestId)
+    {
+        <p class="hint">Request ID: <code>@Model.RequestId</code></p>
+    }
+</section>

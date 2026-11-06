@@ -1,0 +1,53 @@
+@using IntelligentNewsAnalyzer.Services
+@model IntelligentNewsAnalyzer.Models.Article
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+@if (TempData["Status"] is string status)
+{
+    <div class="alert alert-soft-ok">@status</div>
+}
+
+<article class="detail-hero">
+    <div>
+        <p class="eyebrow">@NewsCategories.Label(Model.Category) · @Model.SourceName</p>
+        <h1>@Model.Title</h1>
+        <p class="lead">@(Model.Description ?? "Няма кратко описание от източника.")</p>
+        <div class="card-actions">
+            <a class="btn btn-ghost" href="@Model.Url" target="_blank" rel="noopener">Оригинална статия</a>
+            <form asp-action="Analyze" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-copper" type="submit">Генерирай резюме</button>
+            </form>
+        </div>
+    </div>
+    <div class="detail-image" style="background-image:url('@(Model.ImageUrl ?? "")')"></div>
+</article>
+
+<section class="panel mt-4">
+    <h2>Съдържание</h2>
+    <p>@(Model.Content ?? "News API често връща само откъс от съдържанието. Анализът използва заглавието и описанието.")</p>
+    <p class="hint">Автор: @(Model.Author ?? "неизвестен") · Записано: @Model.FetchedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</p>
+</section>
+
+<section class="mt-4">
+    <div class="section-head">
+        <h2>ИИ анализи</h2>
+    </div>
+    @if (Model.Analyses.Count == 0)
+    {
+        <div class="empty-state">Все още няма резюме за тази новина.</div>
+    }
+    else
+    {
+        @foreach (var analysis in Model.Analyses.OrderByDescending(a => a.CreatedAt))
+        {
+            <a class="mini-card" asp-controller="Analysis" asp-action="Details" asp-route-id="@analysis.Id">
+                <span class="pill">@DisplayText.Sentiment(analysis.Sentiment)</span>
+                <h3>@analysis.Summary</h3>
+                <p>Теми: @(string.IsNullOrWhiteSpace(analysis.Topics) ? "—" : analysis.Topics)</p>
+            </a>
+        }
+    }
+</section>

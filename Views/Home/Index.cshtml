@@ -1,0 +1,92 @@
+@using IntelligentNewsAnalyzer.Models.ViewModels
+@using IntelligentNewsAnalyzer.Services
+@model HomeDashboardViewModel
+@{
+    ViewData["Title"] = "Начало";
+}
+
+<section class="hero hero-banner">
+    <div class="hero-content">
+        <div class="hero-badges">
+            <span class="badge-pill badge-copper">✦ ИНТЕЛИГЕНТЕН АНАЛИЗ НА НОВИНИ</span>
+            <span class="badge-pill badge-outline">GOOGLE GEMINI &amp; NEWS API</span>
+        </div>
+        <h1>Събирай, класифицирай и резюмирай новините с ИИ.</h1>
+        <p class="lead">Приложението извлича статии от News API, записва ги в SQLite, класифицира ги по категории и генерира кратки резюмета чрез Google Gemini.</p>
+        <div class="hero-actions">
+            <a class="btn btn-copper" asp-controller="News" asp-action="Index">Събери новини →</a>
+            <a class="btn btn-ghost" asp-controller="Analysis" asp-action="Index">Анализирай текст</a>
+            <a class="btn btn-text" asp-controller="Home" asp-action="About">За приложението</a>
+        </div>
+        <div class="hero-features">
+            <span><i class="dot"></i> News API v2 асинхронен шлюз</span>
+            <span><i class="dot"></i> Google Gemini резюмиране</span>
+            <span><i class="dot"></i> 7 тематични категории &amp; тоналност</span>
+            <span><i class="dot"></i> Интерактивна статистика с графики</span>
+        </div>
+    </div>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <span>Записани новини</span>
+        <strong>@Model.ArticleCount</strong>
+    </article>
+    <article class="stat-card">
+        <span>ИИ анализи</span>
+        <strong>@Model.AnalysisCount</strong>
+    </article>
+    <article class="stat-card">
+        <span>Източници</span>
+        <strong>@Model.SourceCount</strong>
+    </article>
+</section>
+
+<div class="split">
+    <section>
+        <div class="section-head">
+            <h2>Последни новини</h2>
+            <a asp-controller="News" asp-action="Index">Виж всички</a>
+        </div>
+        @if (Model.LatestArticles.Count == 0)
+        {
+            <div class="empty-state">Все още няма записани статии. Отидете в „Новини“ и извлечете данни от API.</div>
+        }
+        else
+        {
+            <div class="news-grid">
+                @foreach (var article in Model.LatestArticles)
+                {
+                    <a class="news-card" asp-controller="News" asp-action="Details" asp-route-id="@article.Id">
+                        <div class="thumb" style="background-image:url('@(article.ImageUrl ?? "")')"></div>
+                        <div class="news-body">
+                            <span class="pill">@NewsCategories.Label(article.Category)</span>
+                            <h3>@article.Title</h3>
+                            <p>@article.SourceName</p>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    </section>
+    <aside>
+        <div class="section-head">
+            <h2>Последни резюмета</h2>
+        </div>
+        @if (Model.LatestAnalyses.Count == 0)
+        {
+            <div class="empty-state">Няма анализи. Изпратете текст от страницата „Анализ“.</div>
+        }
+        else
+        {
+            @foreach (var analysis in Model.LatestAnalyses)
+            {
+                <a class="mini-card" asp-controller="Analysis" asp-action="Details" asp-route-id="@analysis.Id">
+                    <span class="pill">@NewsCategories.Label(analysis.Category)</span>
+                    <h3>@analysis.Title</h3>
+                    <p>@analysis.Summary</p>
+                </a>
+            }
+        }
+    </aside>
+</div>

@@ -1,0 +1,69 @@
+@using IntelligentNewsAnalyzer.Models.ViewModels
+@using IntelligentNewsAnalyzer.Services
+@model AnalyzeFormViewModel
+@{
+    ViewData["Title"] = "Анализ";
+}
+
+<div class="page-intro">
+    <p class="eyebrow">Езиков модел</p>
+    <h1>Резюме, категория и теми</h1>
+    <p>Въведете текст на новина. Приложението го изпраща асинхронно към Google Gemini (ако има GEMINI_API_KEY) или използва локален резервен анализатор.</p>
+</div>
+
+<div class="split">
+    <form asp-action="Index" method="post" class="panel">
+        @Html.AntiForgeryToken()
+        <div class="mb-3">
+            <label asp-for="Title"></label>
+            <input asp-for="Title" class="form-control" placeholder="По избор" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Text"></label>
+            <textarea asp-for="Text" class="form-control" rows="10" placeholder="Поставете статия, съобщение или абзац за анализ..."></textarea>
+            <span asp-validation-for="Text" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-copper">Анализирай</button>
+    </form>
+
+    <div>
+        @if (Model.Result is not null)
+        {
+            <section class="panel result-panel">
+                <span class="pill">@NewsCategories.Label(Model.Result.Category)</span>
+                <h2>@Model.Result.Title</h2>
+                <p class="lead">@Model.Result.Summary</p>
+                <dl class="meta-dl">
+                    <div><dt>Тоналност</dt><dd>@DisplayText.Sentiment(Model.Result.Sentiment)</dd></div>
+                    <div><dt>Теми</dt><dd>@(string.IsNullOrWhiteSpace(Model.Result.Topics) ? "—" : Model.Result.Topics)</dd></div>
+                    <div><dt>Модел</dt><dd>@DisplayText.Engine(Model.Result.Engine)</dd></div>
+                    <div><dt>Език</dt><dd>@NewsCategories.LanguageLabel(Model.Result.Language)</dd></div>
+                </dl>
+                <a class="btn btn-ghost btn-sm" asp-action="Details" asp-route-id="@Model.Result.Id">Пълен анализ</a>
+            </section>
+        }
+
+        <section class="mt-4">
+            <div class="section-head"><h2>История</h2></div>
+            @if (Model.Recent.Count == 0)
+            {
+                <div class="empty-state">Няма предишни анализи.</div>
+            }
+            else
+            {
+                @foreach (var item in Model.Recent)
+                {
+                    <a class="mini-card" asp-action="Details" asp-route-id="@item.Id">
+                        <span class="pill">@NewsCategories.Label(item.Category)</span>
+                        <h3>@item.Title</h3>
+                        <p>@item.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</p>
+                    </a>
+                }
+            }
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,79 @@
+@using IntelligentNewsAnalyzer.Models.ViewModels
+@using IntelligentNewsAnalyzer.Services
+@model NewsSearchViewModel
+@{
+    ViewData["Title"] = "Новини";
+}
+
+<div class="page-intro">
+    <p class="eyebrow">Външен API</p>
+    <h1>Събиране и класификация на новини</h1>
+    <p>Формулярът изпраща асинхронна заявка към News API чрез HttpClient по ключова дума, категория и език, след което записва резултатите в SQLite.</p>
+</div>
+
+<form asp-action="Fetch" method="post" class="panel form-grid">
+    @Html.AntiForgeryToken()
+    <div>
+        <label asp-for="Query"></label>
+        <input asp-for="Query" class="form-control" placeholder="например climate, AI, elections" />
+    </div>
+    <div>
+        <label asp-for="Category"></label>
+        <select asp-for="Category" asp-items="Model.Categories" class="form-select">
+            <option value="">Всички</option>
+        </select>
+    </div>
+    <div>
+        <label asp-for="Language"></label>
+        <select asp-for="Language" asp-items="Model.Languages" class="form-select"></select>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-copper">Извлечи от News API</button>
+        <a class="btn btn-ghost" asp-action="Index">Покажи записаните</a>
+    </div>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(Model.Message))
+{
+    <div class="alert @(Model.IsError ? "alert-soft-danger" : "alert-soft-ok")" role="alert">@Model.Message</div>
+}
+
+<div class="section-head mt-4">
+    <h2>@(Model.Articles.Count) записани статии</h2>
+</div>
+
+@if (Model.Articles.Count == 0)
+{
+    <div class="empty-state">Няма новини в базата. Попълнете формуляра и извлечете данни.</div>
+}
+else
+{
+    <div class="news-list">
+        @foreach (var article in Model.Articles)
+        {
+            <article class="list-card">
+                <div class="thumb" style="background-image:url('@(article.ImageUrl ?? "")')"></div>
+                <div>
+                    <div class="meta-row">
+                        <span class="pill">@NewsCategories.Label(article.Category)</span>
+                        <span class="pill">@NewsCategories.LanguageLabel(article.Language)</span>
+                        <span>@article.SourceName</span>
+                        @if (article.PublishedAt is DateTime published)
+                        {
+                            <span>@published.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</span>
+                        }
+                    </div>
+                    <h3><a asp-action="Details" asp-route-id="@article.Id">@article.Title</a></h3>
+                    <p>@(article.Description ?? "Няма описание.")</p>
+                    <div class="card-actions">
+                        <a class="btn btn-ghost btn-sm" asp-action="Details" asp-route-id="@article.Id">Детайли</a>
+                        <form asp-action="Analyze" asp-route-id="@article.Id" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-copper btn-sm">Анализирай с ИИ</button>
+                        </form>
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+}

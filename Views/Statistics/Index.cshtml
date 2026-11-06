@@ -1,0 +1,94 @@
+@using IntelligentNewsAnalyzer.Models.ViewModels
+@model StatisticsViewModel
+@{
+    ViewData["Title"] = "Статистика";
+}
+
+<div class="page-intro">
+    <p class="eyebrow">Аналитика</p>
+    <h1>Най-чести теми и източници</h1>
+    <p>Статистиката се изчислява върху записаните в базата новини и върху темите, върнати от езиковия модел.</p>
+</div>
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <span>Новини</span>
+        <strong>@Model.ArticleCount</strong>
+    </article>
+    <article class="stat-card">
+        <span>Анализи</span>
+        <strong>@Model.AnalysisCount</strong>
+    </article>
+</section>
+
+<div class="charts-grid">
+    <section class="panel">
+        <h2>Източници</h2>
+        <canvas id="sourcesChart" height="220"></canvas>
+        @if (Model.TopSources.Count == 0)
+        {
+            <p class="hint">Няма данни. Първо извлечете новини.</p>
+        }
+    </section>
+    <section class="panel">
+        <h2>Категории</h2>
+        <canvas id="categoriesChart" height="220"></canvas>
+    </section>
+</div>
+
+<section class="panel mt-4">
+    <h2>Най-чести теми</h2>
+    @if (Model.TopTopics.Count == 0)
+    {
+        <div class="empty-state">Темите се появяват след поне един ИИ анализ.</div>
+    }
+    else
+    {
+        <ul class="topic-bars">
+            @foreach (var topic in Model.TopTopics)
+            {
+                var width = Model.TopTopics[0].Count == 0 ? 0 : (int)Math.Round(100.0 * topic.Count / Model.TopTopics[0].Count);
+                <li>
+                    <span>@topic.Name</span>
+                    <div class="bar"><i style="width:@width%"></i></div>
+                    <b>@topic.Count</b>
+                </li>
+            }
+        </ul>
+    }
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script>
+        const sources = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopSources));
+        const categories = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopCategories));
+        const palette = ["#c45c26", "#1f4e5f", "#b08968", "#3d5a40", "#9b2335", "#6b4f3a", "#2c6e49", "#7f5539"];
+
+        function draw(id, items) {
+            const el = document.getElementById(id);
+            if (!el || !items.length) return;
+            new Chart(el, {
+                type: "bar",
+                data: {
+                    labels: items.map(x => x.Name),
+                    datasets: [{
+                        data: items.map(x => x.Count),
+                        backgroundColor: palette,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: "#5c5346", maxRotation: 40 } },
+                        y: { beginAtZero: true, ticks: { precision: 0, color: "#5c5346" } }
+                    }
+                }
+            });
+        }
+
+        draw("sourcesChart", sources);
+        draw("categoriesChart", categories);
+    </script>
+}

@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+news.db
+news.db-shm
+news.db-wal
+.env
+appsettings.Development.json
