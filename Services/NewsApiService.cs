@@ -66,6 +66,11 @@ public class NewsApiService : INewsApiService
                 Articles = saved
             };
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning("Извличането на новини е отменено от клиента.");
+            throw;
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Грешка при извличане от News API");

@@ -45,7 +45,6 @@ public class NewsController : Controller
 
         var articles = await articlesQuery
             .OrderByDescending(a => a.PublishedAt ?? a.FetchedAt)
-            .Take(40)
             .ToListAsync(cancellationToken);
 
         var message = TempData["Status"] as string;
@@ -58,7 +57,15 @@ public class NewsController : Controller
     public async Task<IActionResult> Fetch(NewsSearchViewModel form, CancellationToken cancellationToken)
     {
         var language = string.IsNullOrWhiteSpace(form.Language) ? "en" : form.Language;
-        var result = await _newsApi.FetchAsync(form.Query, form.Category, language, cancellationToken);
+        NewsFetchResult result;
+        try
+        {
+            result = await _newsApi.FetchAsync(form.Query, form.Category, language, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return new EmptyResult();
+        }
 
         _db.SearchHistory.Add(new SearchHistory
         {
