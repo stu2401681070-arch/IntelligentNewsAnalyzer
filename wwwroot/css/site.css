@@ -118,19 +118,21 @@ a:hover { color: var(--copper); }
 }
 
 .site-nav {
-  display: flex;
-  gap: 1.25rem;
-  align-items: center;
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
 }
-    .site-nav a:hover {
-        color: var(--copper);
-    }
 
-.s
 .site-nav a {
+    display: inline-block;
     color: var(--ink);
-    font-weight: 600;
-    font-size: 0.95rem;
+    font-weight: 700;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.site-nav a:hover {
+    color: var(--copper);
+    transform: scale(1.08);
 }
 
 .footer-inner {
@@ -703,33 +705,45 @@ label { font-weight: 600; margin-bottom: 0.35rem; display: block; }
 .empty-state { padding: 1.4rem; color: var(--muted); }
 
 @media (max-width: 991px) {
-  .split, .charts-grid, .detail-hero, .form-grid, .list-card, .stats-grid, .news-grid {
-    grid-template-columns: 1fr;
-  }
+    .split,
+    .charts-grid,
+    .detail-hero,
+    .form-grid,
+    .list-card,
+    .stats-grid,
+    .news-grid,
+    .feature-grid,
+    .tech-grid {
+        grid-template-columns: 1fr;
+    }
 
-  /* Менюто се разтяга на нов ред ПОД логото и заглавието */
-  .site-nav {
-    flex: 1 1 100%;
-    flex-basis: 100%;
-    width: 100%;
-    max-width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    padding: 0.35rem 0 0.65rem;
-    border-top: 1px solid var(--line);
-    margin-top: 0.15rem;
-  }
+    .site-nav {
+        flex: 1 1 100%;
+        flex-basis: 100%;
+        width: 100%;
+        max-width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 0.35rem 0 0.65rem;
+        border-top: 1px solid var(--line);
+        margin-top: 0.15rem;
+    }
 
-  .site-nav a {
-    display: block;
-    padding: 0.7rem 0.25rem;
-    border-bottom: 1px solid rgba(216, 204, 184, 0.55);
-  }
+    .site-nav a {
+        display: block;
+        padding: 0.7rem 0.25rem;
+        border-bottom: 1px solid rgba(216, 204, 184, 0.55);
+    }
 
-  .site-nav a:last-child {
-    border-bottom: none;
-  }
+    .site-nav a:last-child {
+        border-bottom: none;
+    }
+
+    .feature-grid,
+    .tech-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (min-width: 992px) {
